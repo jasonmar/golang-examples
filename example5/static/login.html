@@ -1,0 +1,37 @@
+<html>
+<head>
+    <title>Example 5: Login Form</title>
+</head>
+<body>
+    <div id="login-form">
+        <form method="post" action="/login" class="form-horizontal">
+            <h1>Log In</h1>
+            <div class="form-group">
+                <div class="col-md-15">
+                    <input type="text" id="email" name="email" placeholder="Email" tabindex="1" required="true" class="form-control" maxlength="255" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-15">
+                    <input type="password" id="password" name="password" placeholder="Password" tabindex="2" autocomplete="off" required="true" class="form-control" maxlength="100" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <button role="login-button" type="submit" tabindex="3" class="btn btn-primary btn-filled" data-loading-text="&lt;i class=&#39;icon icon-spinner icon-spin&#39;&gt;&lt;/i&gt;" value="Log in">Log In</button>
+                </div>
+                <div class="col-md-7">
+                    <a href="/signup" class="btn btn-default" tabindex="4">Sign Up for free</a>
+                </div>
+                <div class="col-md-6">
+                    <a href="/reset-password" tabindex="5" class="btn btn-link link-secondary">Forgot Password?</a>
+                </div>
+            </div>
+            <input type="hidden" name="g" value="">
+            <input type="hidden" name="t" value="">
+            <input type="hidden" name="CSRF" value="afe8492c00c784295f83330ce7dccaba9bb188b01566e87fceb6794d0e7d9e9d">
+        </form>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>Example 3: Template with Nested Structs</title>
+</head>
+<body>
+    <h1>Dogs</h1>
+    <ul>
+        {{range .Dogs}}
+        <li>{{.Name}} ({{.Age}} years old)</li>
+        {{end}}
+    </ul>
+
+    <h1>Cats</h1>
+    <ul>
+        {{range .Cats}}
+        <li>{{.Name}} ({{.Lives}} Lives)</li>
+        {{end}}
+    </ul>
+
+</body>
+</html>
