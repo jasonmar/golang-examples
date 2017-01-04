@@ -4,7 +4,7 @@ This example go application implements a simple REST API which accepts a JSON pa
 
 The design is based on a blog by [marcio.io](http://marcio.io/2015/07/handling-1-million-requests-per-minute-with-golang/), who reports handling over 1M requests per minute on 4 c4.large AWS EC2 instances.
 
-Decoding JSON and performing a task
+Decoding a massive volume of JSON and asynchronously performing tasks is a common use case for Go. This example application provides a fully working demonstration of how to accomplish this.
 
 
 # Concurrency
