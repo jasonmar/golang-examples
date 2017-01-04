@@ -9,34 +9,33 @@ Decoding a massive volume of JSON and asynchronously performing tasks is a commo
 
 # Concurrency
 
-### goroutines
-At initialization, a Dispatcher is created and a goroutine is created for creating workers.
-Each worker's Work() method is called in a goroutine, beginning the task loop.
-Pointer copy from a global task channel to an individual worker channel occurs in a goroutine.
-A goroutine is created for each HTTP Request. This is where JSON decoding occurs.
+### GoRoutines
+* At initialization, a Dispatcher is created and a goroutine is created for creating workers.
+* Each worker's Work() method is called in a goroutine, beginning the task loop.
+* Pointer copy from a global task channel to an individual worker channel occurs in a goroutine.
+* A goroutine is created for each HTTP Request. This is where JSON decoding occurs.
 
-### channels
-The Dispatcher makes a channel on which workers can send their own channels.
-At the start of the task loop, workers send their task channel then block until a pointer to a task is received.
-Each worker also has a quit channel which causes the task loop to return if a bool is received.
-There is a single global task channel which is read only by the Dispatcher.
-The global task channel is buffered, with size set by environment variable read at startup.
-Each HTTP request sends a Task to the global task channel after successfully decoding a JSON payload.
-The Dispatch loop blocks until a task is received from the global task channel then spawns a goroutine which blocks until a worker task channel is ready to receive.
+### Channels
+* The Dispatcher makes a channel on which workers can send their own channels.
+* At the start of the task loop, workers send their task channel then block until a pointer to a task is received.
+* Each worker also has a quit channel which causes the task loop to return if a bool is received.
+* There is a single global task channel which is read only by the Dispatcher.
+* The global task channel is buffered, with size set by environment variable read at startup.
+* Each HTTP request sends a Task to the global task channel after successfully decoding a JSON payload.
+* The Dispatch loop blocks until a task is received from the global task channel then spawns a goroutine which blocks until a worker task channel is ready to receive.
 
 ### Scalability
 
-HTTP requests are completed as soon as all tasks are sent to the global task channel, with task completion handled asynchronously. This reduces latency of the HTTP requests which should in theory enable higher throughput.
-Most of the time workers will consume tasks fast enough to prevent the request handler from blocking until the global task channel is ready to receive.
-If the buffer capacity of the global task channel is exhausted, HTTP request handlers will block and clients will experience increased latency. This is intentional and is meant to prevent new requests from impacting in-progress tasks.
-Request latency can monitored and used to trigger autoscaling. As new instances come on line workers should be able to consume fast enough to prevent the buffer from being filled and latency should return to normal.
+* HTTP requests are completed as soon as all tasks are sent to the global task channel, with task completion handled asynchronously. This reduces latency of the HTTP requests which should in theory enable higher throughput.
+* Most of the time workers will consume tasks fast enough to prevent the request handler from blocking until the global task channel is ready to receive.
+* If the buffer capacity of the global task channel is exhausted, HTTP request handlers will block and clients will experience increased latency. This is intentional and is meant to prevent new requests from impacting in-progress tasks.
+* Request latency can be monitored and used to trigger autoscaling. As new instances come on line workers should be able to consume fast enough to prevent the buffer from being filled and latency should return to normal.
 
 
 
 # Use of Pointers
 
 ### Can you spot the error in the code below?
-
 ```
 for i, p := range d.Data {
     queue <- &Task{Time: t, Parcel: &p}
@@ -45,8 +44,8 @@ for i, p := range d.Data {
 
 ### What's wrong:
 
-`for i, p := range d.Data` allocates memory for a single instance p and overwrites it each iteration.
-Thus if you take a pointer to p on separate iteration, all those pointers will point to the same address.
+* `for i, p := range d.Data` allocates memory for a single instance p and overwrites it each iteration.
+* Thus if you take a pointer to p on separate iteration, all those pointers will point to the same address.
 
 ```
 for i, p := range d.Data {
@@ -55,7 +54,6 @@ for i, p := range d.Data {
 ```
 
 ### Correct implementation:
-
 ```
 for i := range d.Data {
     p := &d.Data[i] // get a pointer to an indexed element
@@ -83,7 +81,7 @@ curl -H "Content-Type: application/json" -X POST \
 ```
 
 ### Test Results
-
+Note: A random amount of time between 5 to 55 ms is added to simulate storage latency.
 ```
 2017/01/03 22:35:46 Handler: Received Parcel 1
 2017/01/03 22:35:46 Handler: Received Parcel 2
